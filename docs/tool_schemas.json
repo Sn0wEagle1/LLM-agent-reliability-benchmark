@@ -1,0 +1,299 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "search_tickets",
+      "description": "Поиск заявок по фильтрам. Результаты выдаются постранично (по 5 записей).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "assignee": {
+            "type": "string",
+            "enum": [
+              "Иванов",
+              "Петров",
+              "Сидоров",
+              "Смирнов",
+              "Кузнецова"
+            ],
+            "description": "Фамилия сотрудника"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "низкий",
+              "средний",
+              "высокий",
+              "критический"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Новая",
+              "В работе",
+              "На проверке",
+              "Выполнена",
+              "Отменена"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "description": "Фрагмент описания заявки"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Номер страницы, начиная с 1"
+          }
+        },
+        "required": []
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_ticket",
+      "description": "Получить полные сведения о заявке по идентификатору.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "description": "Идентификатор заявки, например REQ-101"
+          }
+        },
+        "required": [
+          "ticket_id"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_ticket_history",
+      "description": "Получить журнал изменений заявки по идентификатору.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "description": "Идентификатор заявки, например REQ-101"
+          }
+        },
+        "required": [
+          "ticket_id"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "create_ticket",
+      "description": "Создать новую заявку. Исполнитель назначается отдельной операцией assign_ticket.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "низкий",
+              "средний",
+              "высокий",
+              "критический"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "Оборудование",
+              "Программное обеспечение",
+              "Сеть",
+              "Доступ",
+              "Прочее"
+            ]
+          },
+          "due_date": {
+            "type": "string",
+            "description": "Срок, формат YYYY-MM-DD"
+          },
+          "estimated_hours": {
+            "type": "integer",
+            "description": "Оценка трудозатрат, часов"
+          }
+        },
+        "required": [
+          "description",
+          "priority",
+          "category"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "update_ticket",
+      "description": "Обновить поля заявки по идентификатору (описание, приоритет, категорию, срок, трудозатраты).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "description": "Идентификатор заявки, например REQ-101"
+          },
+          "description": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "низкий",
+              "средний",
+              "высокий",
+              "критический"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "Оборудование",
+              "Программное обеспечение",
+              "Сеть",
+              "Доступ",
+              "Прочее"
+            ]
+          },
+          "due_date": {
+            "type": "string"
+          },
+          "estimated_hours": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ticket_id"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "assign_ticket",
+      "description": "Назначить исполнителя заявки.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "description": "Идентификатор заявки, например REQ-101"
+          },
+          "assignee": {
+            "type": "string",
+            "enum": [
+              "Иванов",
+              "Петров",
+              "Сидоров",
+              "Смирнов",
+              "Кузнецова"
+            ],
+            "description": "Фамилия сотрудника"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "assignee"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "change_status",
+      "description": "Изменить статус заявки.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "description": "Идентификатор заявки, например REQ-101"
+          },
+          "new_status": {
+            "type": "string",
+            "enum": [
+              "Новая",
+              "В работе",
+              "На проверке",
+              "Выполнена",
+              "Отменена"
+            ]
+          }
+        },
+        "required": [
+          "ticket_id",
+          "new_status"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "add_comment",
+      "description": "Добавить комментарий к заявке.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "description": "Идентификатор заявки, например REQ-101"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "text"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "check_status_transition",
+      "description": "Детерминированная проверка по регламенту: разрешён ли перевод заявки в указанный статус.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ticket_id": {
+            "type": "string",
+            "description": "Идентификатор заявки, например REQ-101"
+          },
+          "new_status": {
+            "type": "string",
+            "enum": [
+              "Новая",
+              "В работе",
+              "На проверке",
+              "Выполнена",
+              "Отменена"
+            ]
+          }
+        },
+        "required": [
+          "ticket_id",
+          "new_status"
+        ]
+      }
+    }
+  }
+]

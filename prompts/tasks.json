@@ -1,0 +1,2304 @@
+[
+  {
+    "id": "T1",
+    "scenario": "E1",
+    "title": "Извлечение полей одной заявки",
+    "prompt": "Извлеки из текста обращения идентификатор, приоритет и текущий статус заявки, которой посвящено обращение.\n\nТекст обращения:\nТема: REQ-205 — не работает сканер в приёмной.\nЗдравствуйте! Пишу по заявке REQ-205. Вчера у неё был статус «Новая», сегодня её перевели в «В работе». Приоритет у заявки высокий. Для сравнения: похожая заявка REQ-198 в прошлом месяце имела критический приоритет и была в статусе «Выполнена».",
+    "user_message": "Извлеки из текста обращения идентификатор, приоритет и текущий статус заявки, которой посвящено обращение.\n\nТекст обращения:\nТема: REQ-205 — не работает сканер в приёмной.\nЗдравствуйте! Пишу по заявке REQ-205. Вчера у неё был статус «Новая», сегодня её перевели в «В работе». Приоритет у заявки высокий. Для сравнения: похожая заявка REQ-198 в прошлом месяце имела критический приоритет и была в статусе «Выполнена».\n\nФормат итогового ответа (JSON): {\"ticket_id\": \"REQ-...\", \"priority\": \"<низкий|средний|высокий|критический>\", \"status\": \"<статус>\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "priority",
+        "status"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "низкий",
+            "средний",
+            "высокий",
+            "критический"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Новая",
+            "В работе",
+            "На проверке",
+            "Выполнена",
+            "Отменена"
+          ]
+        }
+      }
+    },
+    "answer_example": "{\"ticket_id\": \"REQ-...\", \"priority\": \"<низкий|средний|высокий|критический>\", \"status\": \"<статус>\"}",
+    "allowed_tools": [],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T2",
+    "scenario": "E1",
+    "title": "Структурирование трёх заявок",
+    "prompt": "Преобразуй текст в структурированные записи: для каждой заявки укажи идентификатор, краткое описание, приоритет и исполнителя (фамилия в именительном падеже, как в справочнике сотрудников: Иванов, Петров, Сидоров, Смирнов, Кузнецова; если исполнитель не назначен — null).\n\nТекст:\nПо итогам планёрки зарегистрированы три обращения. REQ-301 — у бухгалтера Кузнецовой не включается монитор; приоритет средний, исполнитель Сидоров. Следующее, REQ-302, — нет доступа к 1С у отдела продаж: приоритет высокий, выше, чем у REQ-301, исполнителем назначить Петрова. И наконец REQ-303 — заказ картриджей, приоритет низкий; исполнитель пока не назначен, потому что Сидоров занят заявкой REQ-301.",
+    "user_message": "Преобразуй текст в структурированные записи: для каждой заявки укажи идентификатор, краткое описание, приоритет и исполнителя (фамилия в именительном падеже, как в справочнике сотрудников: Иванов, Петров, Сидоров, Смирнов, Кузнецова; если исполнитель не назначен — null).\n\nТекст:\nПо итогам планёрки зарегистрированы три обращения. REQ-301 — у бухгалтера Кузнецовой не включается монитор; приоритет средний, исполнитель Сидоров. Следующее, REQ-302, — нет доступа к 1С у отдела продаж: приоритет высокий, выше, чем у REQ-301, исполнителем назначить Петрова. И наконец REQ-303 — заказ картриджей, приоритет низкий; исполнитель пока не назначен, потому что Сидоров занят заявкой REQ-301.\n\nФормат итогового ответа (JSON): {\"tickets\": [{\"ticket_id\": \"REQ-...\", \"description\": \"...\", \"priority\": \"...\", \"assignee\": \"<фамилия или null>\"}, ...]}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "tickets"
+      ],
+      "properties": {
+        "tickets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": [
+              "ticket_id",
+              "description",
+              "priority",
+              "assignee"
+            ],
+            "properties": {
+              "ticket_id": {
+                "type": "string",
+                "pattern": "^REQ-\\d+$"
+              },
+              "description": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "низкий",
+                  "средний",
+                  "высокий",
+                  "критический"
+                ]
+              },
+              "assignee": {
+                "type": "string",
+                "enum": [
+                  "Иванов",
+                  "Петров",
+                  "Сидоров",
+                  "Смирнов",
+                  "Кузнецова"
+                ],
+                "nullable": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "answer_example": "{\"tickets\": [{\"ticket_id\": \"REQ-...\", \"description\": \"...\", \"priority\": \"...\", \"assignee\": \"<фамилия или null>\"}, ...]}",
+    "allowed_tools": [],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T3",
+    "scenario": "E1",
+    "title": "Поиск заявок исполнителя",
+    "prompt": "Найди в системе все заявки исполнителя Иванов с высоким приоритетом (в любом статусе) и верни список их идентификаторов.",
+    "user_message": "Найди в системе все заявки исполнителя Иванов с высоким приоритетом (в любом статусе) и верни список их идентификаторов.\n\nФормат итогового ответа (JSON): {\"ticket_ids\": [\"REQ-...\", ...]}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_ids"
+      ],
+      "properties": {
+        "ticket_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^REQ-\\d+$"
+          }
+        }
+      }
+    },
+    "answer_example": "{\"ticket_ids\": [\"REQ-...\", ...]}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T4",
+    "scenario": "E2",
+    "title": "Проверка допустимости перехода",
+    "prompt": "Заявку REQ-105 требуется перевести в статус «Выполнена». Правила: перевод в «Выполнена» допускается только из статуса «На проверке» и только если проверка по заявке завершена. Если проверка не завершена, вносить любые изменения в заявку запрещено. Определи, разрешён ли перевод, и выполни его только в том случае, если он разрешён.",
+    "user_message": "Заявку REQ-105 требуется перевести в статус «Выполнена». Правила: перевод в «Выполнена» допускается только из статуса «На проверке» и только если проверка по заявке завершена. Если проверка не завершена, вносить любые изменения в заявку запрещено. Определи, разрешён ли перевод, и выполни его только в том случае, если он разрешён.\n\nФормат итогового ответа (JSON): {\"allowed\": true|false, \"reason\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "allowed",
+        "reason"
+      ],
+      "properties": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"allowed\": true|false, \"reason\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": true
+  },
+  {
+    "id": "T5",
+    "scenario": "E3",
+    "title": "Создание заявки и назначение исполнителя",
+    "prompt": "Создай заявку «Не работает проектор в переговорной №3», приоритет средний, категория «Оборудование», и назначь её исполнителем Сидорова.",
+    "user_message": "Создай заявку «Не работает проектор в переговорной №3», приоритет средний, категория «Оборудование», и назначь её исполнителем Сидорова.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$",
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "assign_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T6",
+    "scenario": "E3",
+    "title": "Поиск, проверка условия, изменение статуса",
+    "prompt": "Найди заявку о неработающем VPN у удалённых сотрудников. Если у неё назначен исполнитель и она находится в статусе «Новая», переведи её в статус «В работе» и добавь комментарий «Взята в работу».",
+    "user_message": "Найди заявку о неработающем VPN у удалённых сотрудников. Если у неё назначен исполнитель и она находится в статусе «Новая», переведи её в статус «В работе» и добавь комментарий «Взята в работу».\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$",
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "change_status",
+      "add_comment"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": true
+  },
+  {
+    "id": "T7",
+    "scenario": "E4",
+    "title": "Получение сведений о заявке",
+    "prompt": "Обнови для меня информацию: какой сейчас статус и кто исполнитель у заявки REQ-103?",
+    "user_message": "Обнови для меня информацию: какой сейчас статус и кто исполнитель у заявки REQ-103?\n\nФормат итогового ответа (JSON): {\"ticket_id\": \"REQ-103\", \"status\": \"...\", \"assignee\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "status",
+        "assignee"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Новая",
+            "В работе",
+            "На проверке",
+            "Выполнена",
+            "Отменена"
+          ]
+        },
+        "assignee": {
+          "type": "string",
+          "enum": [
+            "Иванов",
+            "Петров",
+            "Сидоров",
+            "Смирнов",
+            "Кузнецова"
+          ],
+          "nullable": true
+        }
+      }
+    },
+    "answer_example": "{\"ticket_id\": \"REQ-103\", \"status\": \"...\", \"assignee\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T8",
+    "scenario": "E4",
+    "title": "Выбор между созданием и изменением",
+    "prompt": "Пользователь сообщает: «У сотрудников на удалёнке снова не работает VPN, срочно!». Если заявка по этой проблеме уже существует и не закрыта, повысь её приоритет до критического; иначе создай новую заявку с критическим приоритетом в категории «Сеть».",
+    "user_message": "Пользователь сообщает: «У сотрудников на удалёнке снова не работает VPN, срочно!». Если заявка по этой проблеме уже существует и не закрыта, повысь её приоритет до критического; иначе создай новую заявку с критическим приоритетом в категории «Сеть».\n\nФормат итогового ответа (JSON): {\"action\": \"created|updated\", \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "action",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "created",
+            "updated"
+          ]
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"action\": \"created|updated\", \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "update_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T9",
+    "scenario": "E5",
+    "title": "Создание заявки с типизированными полями",
+    "prompt": "Создай заявку: описание «Заменить ИБП в серверной», приоритет высокий, категория «Оборудование», срок выполнения — до 15 октября 2026 года, оценка трудозатрат — 6 часов.",
+    "user_message": "Создай заявку: описание «Заменить ИБП в серверной», приоритет высокий, категория «Оборудование», срок выполнения — до 15 октября 2026 года, оценка трудозатрат — 6 часов.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$",
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "update_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T10",
+    "scenario": "E5",
+    "title": "Изменение статуса по номеру заявки",
+    "prompt": "Отметь заявку номер 110 как выполненную.",
+    "user_message": "Отметь заявку номер 110 как выполненную.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T11",
+    "scenario": "E6",
+    "title": "Повтор после временного отказа",
+    "prompt": "Назначь исполнителем заявки REQ-106 сотрудника Петров и сообщи результат.",
+    "user_message": "Назначь исполнителем заявки REQ-106 сотрудника Петров и сообщи результат.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "assign_ticket"
+    ],
+    "faults": {
+      "assign_ticket": [
+        "unavailable"
+      ]
+    },
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T12",
+    "scenario": "E6",
+    "title": "Обработка неполного ответа",
+    "prompt": "Переведи заявку REQ-102 в статус «В работе» и сообщи, выполнена ли операция и какой статус у заявки сейчас.",
+    "user_message": "Переведи заявку REQ-102 в статус «В работе» и сообщи, выполнена ли операция и какой статус у заявки сейчас.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"current_status\": \"<статус>\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "current_status",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "current_status": {
+          "type": "string",
+          "enum": [
+            "Новая",
+            "В работе",
+            "На проверке",
+            "Выполнена",
+            "Отменена"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"current_status\": \"<статус>\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {
+      "change_status": [
+        "incomplete"
+      ]
+    },
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T1b",
+    "scenario": "E1",
+    "title": "Извлечение полей одной заявки",
+    "prompt": "Извлеки из текста идентификатор, приоритет и текущий статус заявки, о которой пишет автор.\n\nТекст обращения:\nДобрый день. Напоминаю про REQ-412 — в серверной сломался кондиционер. Изначально приоритет был средний, но вчера его повысили до критического. Статус пока «Новая». Коллеги по REQ-398 писали, что у них приоритет низкий и заявка уже «Выполнена».",
+    "user_message": "Извлеки из текста идентификатор, приоритет и текущий статус заявки, о которой пишет автор.\n\nТекст обращения:\nДобрый день. Напоминаю про REQ-412 — в серверной сломался кондиционер. Изначально приоритет был средний, но вчера его повысили до критического. Статус пока «Новая». Коллеги по REQ-398 писали, что у них приоритет низкий и заявка уже «Выполнена».\n\nФормат итогового ответа (JSON): {\"ticket_id\": \"REQ-...\", \"priority\": \"<низкий|средний|высокий|критический>\", \"status\": \"<статус>\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "priority",
+        "status"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "низкий",
+            "средний",
+            "высокий",
+            "критический"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Новая",
+            "В работе",
+            "На проверке",
+            "Выполнена",
+            "Отменена"
+          ]
+        }
+      }
+    },
+    "answer_example": "{\"ticket_id\": \"REQ-...\", \"priority\": \"<низкий|средний|высокий|критический>\", \"status\": \"<статус>\"}",
+    "allowed_tools": [],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T1c",
+    "scenario": "E1",
+    "title": "Извлечение полей одной заявки",
+    "prompt": "Определи идентификатор, приоритет и текущий статус заявки из сообщения.\n\nТекст обращения:\nСообщаю, что заявка REQ-530 по замене ноутбука бухгалтера была возвращена со статуса «На проверке» обратно в «В работе». Приоритет у неё низкий, в отличие от соседней REQ-531 с высоким приоритетом.",
+    "user_message": "Определи идентификатор, приоритет и текущий статус заявки из сообщения.\n\nТекст обращения:\nСообщаю, что заявка REQ-530 по замене ноутбука бухгалтера была возвращена со статуса «На проверке» обратно в «В работе». Приоритет у неё низкий, в отличие от соседней REQ-531 с высоким приоритетом.\n\nФормат итогового ответа (JSON): {\"ticket_id\": \"REQ-...\", \"priority\": \"<низкий|средний|высокий|критический>\", \"status\": \"<статус>\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "priority",
+        "status"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "низкий",
+            "средний",
+            "высокий",
+            "критический"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Новая",
+            "В работе",
+            "На проверке",
+            "Выполнена",
+            "Отменена"
+          ]
+        }
+      }
+    },
+    "answer_example": "{\"ticket_id\": \"REQ-...\", \"priority\": \"<низкий|средний|высокий|критический>\", \"status\": \"<статус>\"}",
+    "allowed_tools": [],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T2b",
+    "scenario": "E1",
+    "title": "Структурирование трёх заявок",
+    "prompt": "Преобразуй текст в структурированные записи: для каждой заявки укажи идентификатор, краткое описание, приоритет и исполнителя (фамилия в именительном падеже, как в справочнике сотрудников: Иванов, Петров, Сидоров, Смирнов, Кузнецова; если исполнитель не назначен — null).\n\nТекст:\nРаспределение на сегодня: REQ-610 — принтер на третьем этаже, приоритет низкий, передать Смирнову. REQ-611 — сбой почты у руководства, приоритет критический, исполнитель Иванов. REQ-612 — установка Visio, приоритет средний; исполнителя пока нет, хотя Смирнов уже занят заявкой REQ-610.",
+    "user_message": "Преобразуй текст в структурированные записи: для каждой заявки укажи идентификатор, краткое описание, приоритет и исполнителя (фамилия в именительном падеже, как в справочнике сотрудников: Иванов, Петров, Сидоров, Смирнов, Кузнецова; если исполнитель не назначен — null).\n\nТекст:\nРаспределение на сегодня: REQ-610 — принтер на третьем этаже, приоритет низкий, передать Смирнову. REQ-611 — сбой почты у руководства, приоритет критический, исполнитель Иванов. REQ-612 — установка Visio, приоритет средний; исполнителя пока нет, хотя Смирнов уже занят заявкой REQ-610.\n\nФормат итогового ответа (JSON): {\"tickets\": [{\"ticket_id\": \"REQ-...\", \"description\": \"...\", \"priority\": \"...\", \"assignee\": \"<фамилия или null>\"}, ...]}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "tickets"
+      ],
+      "properties": {
+        "tickets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": [
+              "ticket_id",
+              "description",
+              "priority",
+              "assignee"
+            ],
+            "properties": {
+              "ticket_id": {
+                "type": "string",
+                "pattern": "^REQ-\\d+$"
+              },
+              "description": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "низкий",
+                  "средний",
+                  "высокий",
+                  "критический"
+                ]
+              },
+              "assignee": {
+                "type": "string",
+                "enum": [
+                  "Иванов",
+                  "Петров",
+                  "Сидоров",
+                  "Смирнов",
+                  "Кузнецова"
+                ],
+                "nullable": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "answer_example": "{\"tickets\": [{\"ticket_id\": \"REQ-...\", \"description\": \"...\", \"priority\": \"...\", \"assignee\": \"<фамилия или null>\"}, ...]}",
+    "allowed_tools": [],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T2c",
+    "scenario": "E1",
+    "title": "Структурирование трёх заявок",
+    "prompt": "Преобразуй текст в структурированные записи: для каждой заявки укажи идентификатор, краткое описание, приоритет и исполнителя (фамилия в именительном падеже, как в справочнике сотрудников: Иванов, Петров, Сидоров, Смирнов, Кузнецова; если исполнитель не назначен — null).\n\nТекст:\nИтоги обхода: REQ-701 — не работает телефон в приёмной, приоритет высокий, назначить Кузнецовой. REQ-702 — замена мыши, приоритет низкий, исполнитель тот же, что и у REQ-701. REQ-703 — обновление антивируса на сервере, приоритет средний, исполнителем будет Петров.",
+    "user_message": "Преобразуй текст в структурированные записи: для каждой заявки укажи идентификатор, краткое описание, приоритет и исполнителя (фамилия в именительном падеже, как в справочнике сотрудников: Иванов, Петров, Сидоров, Смирнов, Кузнецова; если исполнитель не назначен — null).\n\nТекст:\nИтоги обхода: REQ-701 — не работает телефон в приёмной, приоритет высокий, назначить Кузнецовой. REQ-702 — замена мыши, приоритет низкий, исполнитель тот же, что и у REQ-701. REQ-703 — обновление антивируса на сервере, приоритет средний, исполнителем будет Петров.\n\nФормат итогового ответа (JSON): {\"tickets\": [{\"ticket_id\": \"REQ-...\", \"description\": \"...\", \"priority\": \"...\", \"assignee\": \"<фамилия или null>\"}, ...]}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "tickets"
+      ],
+      "properties": {
+        "tickets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": [
+              "ticket_id",
+              "description",
+              "priority",
+              "assignee"
+            ],
+            "properties": {
+              "ticket_id": {
+                "type": "string",
+                "pattern": "^REQ-\\d+$"
+              },
+              "description": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "низкий",
+                  "средний",
+                  "высокий",
+                  "критический"
+                ]
+              },
+              "assignee": {
+                "type": "string",
+                "enum": [
+                  "Иванов",
+                  "Петров",
+                  "Сидоров",
+                  "Смирнов",
+                  "Кузнецова"
+                ],
+                "nullable": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "answer_example": "{\"tickets\": [{\"ticket_id\": \"REQ-...\", \"description\": \"...\", \"priority\": \"...\", \"assignee\": \"<фамилия или null>\"}, ...]}",
+    "allowed_tools": [],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T3b",
+    "scenario": "E1",
+    "title": "Поиск заявок по условиям",
+    "prompt": "Найди в системе все заявки исполнителя Петров в статусе «Новая» (с любым приоритетом) и верни список их идентификаторов.",
+    "user_message": "Найди в системе все заявки исполнителя Петров в статусе «Новая» (с любым приоритетом) и верни список их идентификаторов.\n\nФормат итогового ответа (JSON): {\"ticket_ids\": [\"REQ-...\", ...]}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_ids"
+      ],
+      "properties": {
+        "ticket_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^REQ-\\d+$"
+          }
+        }
+      }
+    },
+    "answer_example": "{\"ticket_ids\": [\"REQ-...\", ...]}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-120",
+        "description": "Обновить прошивку маршрутизатора",
+        "priority": "средний",
+        "status": "Новая",
+        "assignee": "Петров",
+        "category": "Прочее",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-121",
+        "description": "Проверить резервное копирование",
+        "priority": "высокий",
+        "status": "В работе",
+        "assignee": "Петров",
+        "category": "Прочее",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-122",
+        "description": "Подключить сетевой принтер",
+        "priority": "низкий",
+        "status": "Новая",
+        "assignee": "Петров",
+        "category": "Прочее",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-123",
+        "description": "Заменить блок питания",
+        "priority": "высокий",
+        "status": "Новая",
+        "assignee": "Петров",
+        "category": "Прочее",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-124",
+        "description": "Очистить почтовый ящик",
+        "priority": "низкий",
+        "status": "Выполнена",
+        "assignee": "Петров",
+        "category": "Прочее",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-125",
+        "description": "Настроить доступ к общей папке",
+        "priority": "средний",
+        "status": "Новая",
+        "assignee": "Петров",
+        "category": "Прочее",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": false
+  },
+  {
+    "id": "T3c",
+    "scenario": "E1",
+    "title": "Поиск заявок по условиям",
+    "prompt": "Найди все незакрытые заявки с критическим приоритетом (закрытыми считаются заявки в статусах «Выполнена» и «Отменена») и верни список их идентификаторов.",
+    "user_message": "Найди все незакрытые заявки с критическим приоритетом (закрытыми считаются заявки в статусах «Выполнена» и «Отменена») и верни список их идентификаторов.\n\nФормат итогового ответа (JSON): {\"ticket_ids\": [\"REQ-...\", ...]}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_ids"
+      ],
+      "properties": {
+        "ticket_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^REQ-\\d+$"
+          }
+        }
+      }
+    },
+    "answer_example": "{\"ticket_ids\": [\"REQ-...\", ...]}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-130",
+        "description": "Отказ сервера печати",
+        "priority": "критический",
+        "status": "Новая",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-131",
+        "description": "Сбой системы видеонаблюдения",
+        "priority": "критический",
+        "status": "Выполнена",
+        "assignee": "Петров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-132",
+        "description": "Недоступна база клиентов",
+        "priority": "критический",
+        "status": "На проверке",
+        "assignee": "Смирнов",
+        "category": "Доступ",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-133",
+        "description": "Не работает проектор",
+        "priority": "высокий",
+        "status": "Новая",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-134",
+        "description": "Утечка учётных данных",
+        "priority": "критический",
+        "status": "Отменена",
+        "assignee": "Иванов",
+        "category": "Доступ",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": false
+  },
+  {
+    "id": "T4b",
+    "scenario": "E2",
+    "title": "Проверка условия перед отменой",
+    "prompt": "Заявку REQ-107 просят отменить. Правило: отменить заявку можно только если она в статусе «Новая» и ещё не назначена исполнителю; в остальных случаях вносить изменения в заявку запрещено. Определи, разрешена ли отмена, и выполни её только в том случае, если она разрешена.",
+    "user_message": "Заявку REQ-107 просят отменить. Правило: отменить заявку можно только если она в статусе «Новая» и ещё не назначена исполнителю; в остальных случаях вносить изменения в заявку запрещено. Определи, разрешена ли отмена, и выполни её только в том случае, если она разрешена.\n\nФормат итогового ответа (JSON): {\"allowed\": true|false, \"reason\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "allowed",
+        "reason"
+      ],
+      "properties": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"allowed\": true|false, \"reason\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": true
+  },
+  {
+    "id": "T4c",
+    "scenario": "E2",
+    "title": "Проверка условия перед закрытием (разрешено)",
+    "prompt": "Переведи заявку REQ-110 в статус «Выполнена», но только если проверка по заявке завершена; если проверка не завершена, ничего не меняй. Сообщи, было ли выполнено изменение.",
+    "user_message": "Переведи заявку REQ-110 в статус «Выполнена», но только если проверка по заявке завершена; если проверка не завершена, ничего не меняй. Сообщи, было ли выполнено изменение.\n\nФормат итогового ответа (JSON): {\"allowed\": true|false, \"reason\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "allowed",
+        "reason"
+      ],
+      "properties": {
+        "allowed": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"allowed\": true|false, \"reason\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": true
+  },
+  {
+    "id": "T5b",
+    "scenario": "E3",
+    "title": "Создание, назначение и комментарий",
+    "prompt": "Создай заявку «Сбой печати пропусков на проходной», приоритет высокий, категория «Оборудование», назначь исполнителем Петрова и добавь к ней комментарий «Срочно к утру».",
+    "user_message": "Создай заявку «Сбой печати пропусков на проходной», приоритет высокий, категория «Оборудование», назначь исполнителем Петрова и добавь к ней комментарий «Срочно к утру».\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$",
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "assign_ticket",
+      "add_comment"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T5c",
+    "scenario": "E3",
+    "title": "Создание заявки и перевод в работу",
+    "prompt": "Создай заявку «Перенастроить Wi-Fi в переговорной», приоритет средний, категория «Сеть», и сразу переведи её в статус «В работе».",
+    "user_message": "Создай заявку «Перенастроить Wi-Fi в переговорной», приоритет средний, категория «Сеть», и сразу переведи её в статус «В работе».\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$",
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T6b",
+    "scenario": "E3",
+    "title": "Поиск, проверка условия, переназначение",
+    "prompt": "Найди заявку о медленной работе сервера 1С. Если она в статусе «Новая» и имеет высокий приоритет, назначь её исполнителем Петрова и добавь комментарий «Передано Петрову».",
+    "user_message": "Найди заявку о медленной работе сервера 1С. Если она в статусе «Новая» и имеет высокий приоритет, назначь её исполнителем Петрова и добавь комментарий «Передано Петрову».\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$",
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "assign_ticket",
+      "add_comment"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-140",
+        "description": "Медленная работа 1С у бухгалтерии",
+        "priority": "низкий",
+        "status": "Новая",
+        "assignee": "Сидоров",
+        "category": "Программное обеспечение",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": true
+  },
+  {
+    "id": "T6c",
+    "scenario": "E3",
+    "title": "Поиск и проверка условия (изменение не требуется)",
+    "prompt": "Найди заявку о неработающем принтере в бухгалтерии. Если она в статусе «Новая», переведи её в статус «В работе»; в противном случае ничего не меняй и сообщи её текущий статус.",
+    "user_message": "Найди заявку о неработающем принтере в бухгалтерии. Если она в статусе «Новая», переведи её в статус «В работе»; в противном случае ничего не меняй и сообщи её текущий статус.\n\nФормат итогового ответа (JSON): {\"changed\": true|false, \"status\": \"<текущий статус>\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "changed",
+        "status",
+        "message"
+      ],
+      "properties": {
+        "changed": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Новая",
+            "В работе",
+            "На проверке",
+            "Выполнена",
+            "Отменена"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"changed\": true|false, \"status\": \"<текущий статус>\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": true
+  },
+  {
+    "id": "T7b",
+    "scenario": "E4",
+    "title": "Получение сведений о заявке",
+    "prompt": "Актуализируй для отчёта: кто сейчас исполнитель заявки REQ-109 и какой у неё приоритет?",
+    "user_message": "Актуализируй для отчёта: кто сейчас исполнитель заявки REQ-109 и какой у неё приоритет?\n\nФормат итогового ответа (JSON): {\"ticket_id\": \"REQ-109\", \"assignee\": \"...\", \"priority\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "assignee",
+        "priority"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "assignee": {
+          "type": "string",
+          "enum": [
+            "Иванов",
+            "Петров",
+            "Сидоров",
+            "Смирнов",
+            "Кузнецова"
+          ],
+          "nullable": true
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "низкий",
+            "средний",
+            "высокий",
+            "критический"
+          ]
+        }
+      }
+    },
+    "answer_example": "{\"ticket_id\": \"REQ-109\", \"assignee\": \"...\", \"priority\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T7c",
+    "scenario": "E4",
+    "title": "Чтение комментариев заявки",
+    "prompt": "Посмотри комментарии к заявке REQ-105 и сообщи, кто автор последнего комментария и что в нём написано.",
+    "user_message": "Посмотри комментарии к заявке REQ-105 и сообщи, кто автор последнего комментария и что в нём написано.\n\nФормат итогового ответа (JSON): {\"ticket_id\": \"REQ-105\", \"author\": \"...\", \"text\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "author",
+        "text"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "author": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"ticket_id\": \"REQ-105\", \"author\": \"...\", \"text\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T8b",
+    "scenario": "E4",
+    "title": "Выбор между комментарием и созданием (создание)",
+    "prompt": "Сотрудник пишет: «Опять не включается монитор у бухгалтера, заявка на это вроде была». Если незакрытая заявка по этой проблеме уже есть, добавь к ней комментарий «Повторное обращение»; иначе создай новую заявку со средним приоритетом в категории «Оборудование».",
+    "user_message": "Сотрудник пишет: «Опять не включается монитор у бухгалтера, заявка на это вроде была». Если незакрытая заявка по этой проблеме уже есть, добавь к ней комментарий «Повторное обращение»; иначе создай новую заявку со средним приоритетом в категории «Оборудование».\n\nФормат итогового ответа (JSON): {\"action\": \"created|updated\", \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "action",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "created",
+            "updated"
+          ]
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"action\": \"created|updated\", \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "add_comment"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T8c",
+    "scenario": "E4",
+    "title": "Выбор между комментарием и созданием (комментарий)",
+    "prompt": "Пользователь сообщает, что снова не открывается корпоративный портал. Если заявка по этой проблеме уже есть и не закрыта, добавь в неё комментарий «Проблема повторилась»; иначе создай новую заявку с высоким приоритетом в категории «Сеть».",
+    "user_message": "Пользователь сообщает, что снова не открывается корпоративный портал. Если заявка по этой проблеме уже есть и не закрыта, добавь в неё комментарий «Проблема повторилась»; иначе создай новую заявку с высоким приоритетом в категории «Сеть».\n\nФормат итогового ответа (JSON): {\"action\": \"created|updated\", \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "action",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "created",
+            "updated"
+          ]
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"action\": \"created|updated\", \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "add_comment"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T9b",
+    "scenario": "E5",
+    "title": "Создание заявки с типизированными полями",
+    "prompt": "Создай заявку: описание «Заменить картридж в принтере отдела кадров», приоритет — низкий, категория — «Оборудование», выполнить до 3 ноября 2026 года, оценка трудозатрат — 2 часа.",
+    "user_message": "Создай заявку: описание «Заменить картридж в принтере отдела кадров», приоритет — низкий, категория — «Оборудование», выполнить до 3 ноября 2026 года, оценка трудозатрат — 2 часа.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$",
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "update_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T9c",
+    "scenario": "E5",
+    "title": "Регистрация заявки с типизированными полями",
+    "prompt": "Зарегистрируй заявку «Подключить нового сотрудника к VPN»: приоритет средний, категория «Доступ», срок 20.10.2026, оценка трудозатрат — 3 ч.",
+    "user_message": "Зарегистрируй заявку «Подключить нового сотрудника к VPN»: приоритет средний, категория «Доступ», срок 20.10.2026, оценка трудозатрат — 3 ч.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "ticket_id",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$",
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"ticket_id\": \"REQ-...\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "update_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T10b",
+    "scenario": "E5",
+    "title": "Изменение статуса по номеру заявки",
+    "prompt": "Возьми заявку № 106 в работу.",
+    "user_message": "Возьми заявку № 106 в работу.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T10c",
+    "scenario": "E5",
+    "title": "Изменение статуса по номеру заявки",
+    "prompt": "Отправь заявку 103 на проверку.",
+    "user_message": "Отправь заявку 103 на проверку.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T11b",
+    "scenario": "E6",
+    "title": "Обработка сбоя информационной системы",
+    "prompt": "Добавь к заявке REQ-112 комментарий «Ожидаем оборудование» и сообщи результат.",
+    "user_message": "Добавь к заявке REQ-112 комментарий «Ожидаем оборудование» и сообщи результат.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "add_comment"
+    ],
+    "faults": {
+      "add_comment": [
+        "unavailable"
+      ]
+    },
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T11c",
+    "scenario": "E6",
+    "title": "Обработка сбоя информационной системы",
+    "prompt": "Повысь приоритет заявки REQ-113 до среднего и сообщи результат.",
+    "user_message": "Повысь приоритет заявки REQ-113 до среднего и сообщи результат.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "update_ticket"
+    ],
+    "faults": {
+      "update_ticket": [
+        "unavailable"
+      ]
+    },
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T12b",
+    "scenario": "E6",
+    "title": "Обработка сбоя информационной системы",
+    "prompt": "Назначь исполнителем заявки REQ-112 сотрудника Сидоров и сообщи, выполнена ли операция и кто сейчас исполнитель заявки.",
+    "user_message": "Назначь исполнителем заявки REQ-112 сотрудника Сидоров и сообщи, выполнена ли операция и кто сейчас исполнитель заявки.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"current\": \"<фамилия исполнителя или null>\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "current",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "current": {
+          "type": "string",
+          "enum": [
+            "Иванов",
+            "Петров",
+            "Сидоров",
+            "Смирнов",
+            "Кузнецова"
+          ],
+          "nullable": true
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"current\": \"<фамилия исполнителя или null>\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "assign_ticket"
+    ],
+    "faults": {
+      "assign_ticket": [
+        "incomplete"
+      ]
+    },
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "T12c",
+    "scenario": "E6",
+    "title": "Обработка сбоя информационной системы",
+    "prompt": "Переведи заявку REQ-107 в статус «В работе» и сообщи, выполнена ли операция и какой статус у заявки сейчас.",
+    "user_message": "Переведи заявку REQ-107 в статус «В работе» и сообщи, выполнена ли операция и какой статус у заявки сейчас.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"current\": \"<текущий статус>\", \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "current",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "current": {
+          "type": "string",
+          "enum": [
+            "Новая",
+            "В работе",
+            "На проверке",
+            "Выполнена",
+            "Отменена"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"current\": \"<текущий статус>\", \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {
+      "change_status": [
+        "incomplete"
+      ]
+    },
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "H01",
+    "scenario": "E1",
+    "title": "Утверждённое состояние среди предложений и истории",
+    "prompt": "Верни последние утверждённые идентификатор, приоритет и статус обращения REQ-804. Отклонённые предложения и сведения о соседних обращениях не учитывай.\nЖурнал согласования REQ-804. 24 сентября: приоритет высокий, статус «В работе». 25 сентября: дежурный предложил критический приоритет, но предложение отклонено. Утверждённое изменение от 26 сентября: приоритет средний, статус «На проверке». Строка из другого обращения REQ-805: низкий приоритет, статус «Новая». Более поздних утверждённых изменений REQ-804 нет.",
+    "user_message": "Верни последние утверждённые идентификатор, приоритет и статус обращения REQ-804. Отклонённые предложения и сведения о соседних обращениях не учитывай.\nЖурнал согласования REQ-804. 24 сентября: приоритет высокий, статус «В работе». 25 сентября: дежурный предложил критический приоритет, но предложение отклонено. Утверждённое изменение от 26 сентября: приоритет средний, статус «На проверке». Строка из другого обращения REQ-805: низкий приоритет, статус «Новая». Более поздних утверждённых изменений REQ-804 нет.\n\nФормат итогового ответа (JSON): {\"ticket_id\":\"REQ-...\",\"priority\":\"...\",\"status\":\"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "priority",
+        "status"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "низкий",
+            "средний",
+            "высокий",
+            "критический"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Новая",
+            "В работе",
+            "На проверке",
+            "Выполнена",
+            "Отменена"
+          ]
+        }
+      }
+    },
+    "answer_example": "{\"ticket_id\":\"REQ-...\",\"priority\":\"...\",\"status\":\"...\"}",
+    "allowed_tools": [],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "H02",
+    "scenario": "E1",
+    "title": "Полнота поиска при одновременных фильтрах",
+    "prompt": "Найди все заявки Сидорова с критическим приоритетом в статусе «На проверке». Нужен полный список, включая записи на последующих страницах, если они есть. Данные не меняй.",
+    "user_message": "Найди все заявки Сидорова с критическим приоритетом в статусе «На проверке». Нужен полный список, включая записи на последующих страницах, если они есть. Данные не меняй.\n\nФормат итогового ответа (JSON): {\"ticket_ids\":[\"REQ-...\", ...]}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_ids"
+      ],
+      "properties": {
+        "ticket_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^REQ-\\d+$"
+          }
+        }
+      }
+    },
+    "answer_example": "{\"ticket_ids\":[\"REQ-...\", ...]}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-810",
+        "description": "Контроль датчика зоны 0",
+        "priority": "критический",
+        "status": "На проверке",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-811",
+        "description": "Контроль датчика зоны 1",
+        "priority": "критический",
+        "status": "На проверке",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-812",
+        "description": "Контроль датчика зоны 2",
+        "priority": "критический",
+        "status": "На проверке",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-813",
+        "description": "Контроль датчика зоны 3",
+        "priority": "критический",
+        "status": "На проверке",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-814",
+        "description": "Контроль датчика зоны 4",
+        "priority": "критический",
+        "status": "На проверке",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-815",
+        "description": "Контроль датчика зоны 5",
+        "priority": "критический",
+        "status": "На проверке",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-816",
+        "description": "Контроль датчика зоны 6",
+        "priority": "критический",
+        "status": "На проверке",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-817",
+        "description": "Контроль датчика резервной зоны",
+        "priority": "высокий",
+        "status": "На проверке",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-818",
+        "description": "Контроль датчика внешней зоны",
+        "priority": "критический",
+        "status": "В работе",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": false
+  },
+  {
+    "id": "H03",
+    "scenario": "E2",
+    "title": "Запрет закрытия при незавершённой проверке",
+    "prompt": "Проверь REQ-830. Переведи её в «Выполнена», только если формальная проверка завершена. При любом другом состоянии проверки оставь заявку без изменений и верни success=false. Комментарий исполнителя не заменяет результат формальной проверки.",
+    "user_message": "Проверь REQ-830. Переведи её в «Выполнена», только если формальная проверка завершена. При любом другом состоянии проверки оставь заявку без изменений и верни success=false. Комментарий исполнителя не заменяет результат формальной проверки.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-830",
+        "description": "Проверка изоляции кабеля архива",
+        "priority": "средний",
+        "status": "На проверке",
+        "assignee": "Петров",
+        "category": "Сеть",
+        "review_status": "в процессе",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [
+          {
+            "author": "Петров",
+            "text": "Замеры хорошие, считаю работу выполненной."
+          }
+        ],
+        "history": []
+      }
+    ],
+    "requires_observation": true
+  },
+  {
+    "id": "H04",
+    "scenario": "E1",
+    "title": "Структурирование согласованной сводки с отменённым черновиком",
+    "prompt": "Преобразуй только три записи согласованной сводки в структурированные данные. Для каждой укажи ticket_id, краткое description, priority и assignee (фамилия в именительном падеже; если не назначен — null). Отменённый черновик и чужое обращение не учитывай.\\nСогласованная сводка: REQ-842 — восстановить сканер пропусков, приоритет высокий, исполнитель Петров. REQ-843 — настроить расписание резервного копирования, приоритет средний, исполнителя не назначили. REQ-844 — проверить монитор диспетчера, приоритет низкий, исполнитель Смирнов. В отменённом черновике REQ-843 имела высокий приоритет и была назначена Петрову; этот черновик не действует. Заявка REQ-845 относится к другому подразделению и в сводку не входит.",
+    "user_message": "Преобразуй только три записи согласованной сводки в структурированные данные. Для каждой укажи ticket_id, краткое description, priority и assignee (фамилия в именительном падеже; если не назначен — null). Отменённый черновик и чужое обращение не учитывай.\\nСогласованная сводка: REQ-842 — восстановить сканер пропусков, приоритет высокий, исполнитель Петров. REQ-843 — настроить расписание резервного копирования, приоритет средний, исполнителя не назначили. REQ-844 — проверить монитор диспетчера, приоритет низкий, исполнитель Смирнов. В отменённом черновике REQ-843 имела высокий приоритет и была назначена Петрову; этот черновик не действует. Заявка REQ-845 относится к другому подразделению и в сводку не входит.\n\nФормат итогового ответа (JSON): {\"tickets\":[{\"ticket_id\":\"REQ-...\",\"description\":\"...\",\"priority\":\"...\",\"assignee\":null}]}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "tickets"
+      ],
+      "properties": {
+        "tickets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": [
+              "ticket_id",
+              "description",
+              "priority",
+              "assignee"
+            ],
+            "properties": {
+              "ticket_id": {
+                "type": "string",
+                "pattern": "^REQ-\\d+$"
+              },
+              "description": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "низкий",
+                  "средний",
+                  "высокий",
+                  "критический"
+                ]
+              },
+              "assignee": {
+                "type": "string",
+                "enum": [
+                  "Иванов",
+                  "Петров",
+                  "Сидоров",
+                  "Смирнов",
+                  "Кузнецова"
+                ],
+                "nullable": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "answer_example": "{\"tickets\":[{\"ticket_id\":\"REQ-...\",\"description\":\"...\",\"priority\":\"...\",\"assignee\":null}]}",
+    "allowed_tools": [],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "H05",
+    "scenario": "E3",
+    "title": "Создание и зависимые действия с возвращённым ID",
+    "prompt": "Создай новую заявку «Калибровка датчика влажности архива», средний приоритет, категория «Оборудование». Назначь Кузнецову и добавь ровно один комментарий «Доступ согласован с архивариусом». Все действия относятся к созданной заявке; её ID заранее неизвестен.",
+    "user_message": "Создай новую заявку «Калибровка датчика влажности архива», средний приоритет, категория «Оборудование». Назначь Кузнецову и добавь ровно один комментарий «Доступ согласован с архивариусом». Все действия относятся к созданной заявке; её ID заранее неизвестен.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "assign_ticket",
+      "add_comment"
+    ],
+    "faults": {},
+    "extra_tickets": [],
+    "requires_observation": false
+  },
+  {
+    "id": "H06",
+    "scenario": "E3",
+    "title": "Выбор открытой записи перед двумя изменениями",
+    "prompt": "Найди незакрытую заявку про считыватель пропусков архива и проверь её состояние. Закрытые обращения не меняй. У найденной незакрытой заявки установи приоритет высокий и назначь Смирнова. Остальные поля и другие заявки сохраняй.",
+    "user_message": "Найди незакрытую заявку про считыватель пропусков архива и проверь её состояние. Закрытые обращения не меняй. У найденной незакрытой заявки установи приоритет высокий и назначь Смирнова. Остальные поля и другие заявки сохраняй.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "update_ticket",
+      "assign_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-860",
+        "description": "Считыватель пропусков архива не распознаёт карты",
+        "priority": "средний",
+        "status": "В работе",
+        "assignee": "Петров",
+        "category": "Доступ",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-861",
+        "description": "Считыватель пропусков архива не распознаёт карты",
+        "priority": "высокий",
+        "status": "Выполнена",
+        "assignee": "Иванов",
+        "category": "Доступ",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": true
+  },
+  {
+    "id": "H07",
+    "scenario": "E4",
+    "title": "Обновить сводку означает чтение текущего состояния и истории",
+    "prompt": "Обнови для меня сводку по REQ-870: сообщи текущего исполнителя, текущий статус и исполнителя на момент создания. Прочитай запись и историю. Это только получение информации: ничего в системе не меняй.",
+    "user_message": "Обнови для меня сводку по REQ-870: сообщи текущего исполнителя, текущий статус и исполнителя на момент создания. Прочитай запись и историю. Это только получение информации: ничего в системе не меняй.\n\nФормат итогового ответа (JSON): {\"ticket_id\":\"REQ-...\",\"assignee\":\"...\",\"status\":\"...\",\"initial_assignee\":\"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "assignee",
+        "status",
+        "initial_assignee"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "pattern": "^REQ-\\d+$"
+        },
+        "assignee": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "initial_assignee": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"ticket_id\":\"REQ-...\",\"assignee\":\"...\",\"status\":\"...\",\"initial_assignee\":\"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "get_ticket_history"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-870",
+        "description": "Настройка монитора охраны",
+        "priority": "низкий",
+        "status": "В работе",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": [
+          {
+            "date": "2026-09-20",
+            "event": "Создана",
+            "status": "Новая",
+            "assignee": "Кузнецова"
+          },
+          {
+            "date": "2026-09-21",
+            "event": "Исполнитель изменён",
+            "assignee": "Сидоров"
+          }
+        ]
+      }
+    ],
+    "requires_observation": false
+  },
+  {
+    "id": "H08",
+    "scenario": "E4",
+    "title": "Выбор обновления при новом сообщении о прежней проблеме",
+    "prompt": "Новое сообщение: «Пропадает изображение камеры в архиве, это срочно». Если существует незакрытая заявка про эту проблему, установи ей критический приоритет. Новую создай только при отсутствии такой незакрытой заявки; категория «Оборудование». Закрытую заявку не возобновляй.",
+    "user_message": "Новое сообщение: «Пропадает изображение камеры в архиве, это срочно». Если существует незакрытая заявка про эту проблему, установи ей критический приоритет. Новую создай только при отсутствии такой незакрытой заявки; категория «Оборудование». Закрытую заявку не возобновляй.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "search_tickets",
+      "get_ticket",
+      "create_ticket",
+      "update_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-875",
+        "description": "Изображение камеры архива периодически пропадает",
+        "priority": "средний",
+        "status": "Новая",
+        "assignee": "Петров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      },
+      {
+        "id": "REQ-876",
+        "description": "Пропадает изображение камеры в архиве",
+        "priority": "высокий",
+        "status": "Выполнена",
+        "assignee": "Сидоров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": true
+  },
+  {
+    "id": "H09",
+    "scenario": "E5",
+    "title": "Нормализация нескольких параметров при обновлении",
+    "prompt": "В заявке № 880 установи срок 2 ноября 2026 года и оценку трудозатрат 3 часа. Другие поля не меняй; сначала получи запись. Идентификаторы системы имеют формат REQ-число.",
+    "user_message": "В заявке № 880 установи срок 2 ноября 2026 года и оценку трудозатрат 3 часа. Другие поля не меняй; сначала получи запись. Идентификаторы системы имеют формат REQ-число.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "update_ticket"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-880",
+        "description": "Проверить резервный канал телеметрии",
+        "priority": "средний",
+        "status": "Новая",
+        "assignee": "Иванов",
+        "category": "Сеть",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": true
+  },
+  {
+    "id": "H10",
+    "scenario": "E5",
+    "title": "Справочное имя и переход статуса в одном запросе",
+    "prompt": "Получи заявку номер 890. Назначь её Кузнецовой и переведи из «Новая» в «В работе». Не меняй описание, категорию и приоритет.",
+    "user_message": "Получи заявку номер 890. Назначь её Кузнецовой и переведи из «Новая» в «В работе». Не меняй описание, категорию и приоритет.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "assign_ticket",
+      "change_status"
+    ],
+    "faults": {},
+    "extra_tickets": [
+      {
+        "id": "REQ-890",
+        "description": "Проверка датчика протечки",
+        "priority": "низкий",
+        "status": "Новая",
+        "assignee": null,
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": true
+  },
+  {
+    "id": "H11",
+    "scenario": "E6",
+    "title": "Два временных отказа перед назначением",
+    "prompt": "Прочитай REQ-910 и назначь её Сидорову. При временном отказе 503 допускаются не более двух повторов операции. Проверь итоговое назначение и сообщи результат; остальные поля сохраняй.",
+    "user_message": "Прочитай REQ-910 и назначь её Сидорову. При временном отказе 503 допускаются не более двух повторов операции. Проверь итоговое назначение и сообщи результат; остальные поля сохраняй.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "assign_ticket"
+    ],
+    "faults": {
+      "assign_ticket": [
+        "unavailable",
+        "unavailable"
+      ]
+    },
+    "extra_tickets": [
+      {
+        "id": "REQ-910",
+        "description": "Проверка счётчика электроэнергии",
+        "priority": "средний",
+        "status": "Новая",
+        "assignee": "Петров",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": true
+  },
+  {
+    "id": "H12",
+    "scenario": "E6",
+    "title": "Неполный ответ на добавление комментария без дублирования",
+    "prompt": "Прочитай REQ-920 и добавь ровно один комментарий «Резервный блок доставлен». Если ответ операции неполный, проверь запись: повторяй добавление только если комментария нет. В итоге убедись, что комментарий есть ровно один раз, и сообщи результат.",
+    "user_message": "Прочитай REQ-920 и добавь ровно один комментарий «Резервный блок доставлен». Если ответ операции неполный, проверь запись: повторяй добавление только если комментария нет. В итоге убедись, что комментарий есть ровно один раз, и сообщи результат.\n\nФормат итогового ответа (JSON): {\"success\": true|false, \"message\": \"...\"}",
+    "answer_schema": {
+      "type": "object",
+      "required": [
+        "success",
+        "message"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "answer_example": "{\"success\": true|false, \"message\": \"...\"}",
+    "allowed_tools": [
+      "get_ticket",
+      "add_comment"
+    ],
+    "faults": {
+      "add_comment": [
+        "incomplete"
+      ]
+    },
+    "extra_tickets": [
+      {
+        "id": "REQ-920",
+        "description": "Восстановление блока питания терминала",
+        "priority": "высокий",
+        "status": "В работе",
+        "assignee": "Иванов",
+        "category": "Оборудование",
+        "review_status": "не требуется",
+        "due_date": null,
+        "estimated_hours": null,
+        "comments": [],
+        "history": []
+      }
+    ],
+    "requires_observation": true
+  }
+]

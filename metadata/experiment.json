@@ -1,0 +1,51 @@
+{
+  "model": {
+    "name": "qwen3:14b",
+    "digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+    "quantization": "Q4_K_M"
+  },
+  "ollama_version": {
+    "version": "0.40.13"
+  },
+  "options": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "num_ctx": 8192
+  },
+  "think": false,
+  "hardware": {
+    "cpu": "Intel Core i7-8700",
+    "ram_gb": 16,
+    "gpu": "NVIDIA GeForce RTX 3070 Ti",
+    "vram_gb": 8
+  },
+  "digest_scope": "Digest сохранён для дополнительных Q4-серий; в исходных основной, Q8 и абляционной сериях записан только тег модели.",
+  "seed": {
+    "original": "1000 + 97 * rep + task_index",
+    "holdout": "20000 + 97 * rep + task_index"
+  },
+  "h05_correction": {
+    "change": {
+      "task": "H05",
+      "requires_observation": {
+        "old": true,
+        "new": false
+      }
+    },
+    "reason": "Эталон ошибочно требовал прочитать ещё не созданную запись.",
+    "repeated_runs": 10,
+    "mechanisms_changed": false,
+    "prompts_changed": false,
+    "final_results": "results/holdout.jsonl",
+    "record_flag": "etalon_correction"
+  },
+  "counts": {
+    "main": 720,
+    "q8": 108,
+    "ablation": 324,
+    "holdout": 120,
+    "general_df": 72,
+    "extra_seed": 108
+  }
+}
